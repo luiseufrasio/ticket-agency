@@ -7,16 +7,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.AccessTimeout;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.ejb.Timeout;
-import javax.ejb.Timer;
-import javax.ejb.TimerConfig;
-import javax.ejb.TimerService;
 
 import org.jboss.logging.Logger;
 
@@ -30,25 +25,10 @@ import com.packtpub.wflydevelopment.chapter3.exception.SeatBookedException;
 public class TheatreBox {
 
 	private static final Logger logger = Logger.getLogger(TheatreBox.class);
-
-	@Resource
-	TimerService timerService;
-	
-	private static final long DURATION = TimeUnit.SECONDS.toMillis(20);
-	
-	@PostConstruct
-	public void createTimer() {
-		timerService.createSingleActionTimer(DURATION, new TimerConfig());
-	}
-	
-	@Timeout
-	public void timeout(Timer timer) {
-		logger.info("Rebuilding Theatre Map.");
-		setupTheatre();
-	}
 	
 	private Map<Integer, Seat> seats;
 	
+	@PostConstruct
 	public void setupTheatre() {
 		seats = new HashMap<>();
 		int id = 0;
