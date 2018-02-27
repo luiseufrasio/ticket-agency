@@ -1,9 +1,12 @@
 package com.packtpub.wflydevelopment.chapter3.boundary;
 
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.AccessTimeout;
+import javax.ejb.AsyncResult;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
@@ -49,6 +52,18 @@ public class TheatreBooker implements TheatreBookerRemote {
 		logger.infov("Seat {0} booked.", seatId);
 		
 		return "Seat booked.";
+	}
+
+	@Asynchronous
+	@Override
+	public Future<String> bookSeatAsync(int seatId) {
+		try {
+			Thread.sleep(10000);
+			bookSeat(seatId);	
+			return new AsyncResult<>("Book seat: " + seatId + ". Money Left: " + money);
+		} catch (SeatBookedException | NotEnoughMoneyException | NoSuchSeatException | InterruptedException e) {
+			return new AsyncResult<>(e.getMessage());
+		}
 	}
 
 }
